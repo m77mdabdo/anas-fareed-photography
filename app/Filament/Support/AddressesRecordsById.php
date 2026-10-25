@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * slug IS the address. In the panel it is wrong twice over: a slug is editable,
  * so saving a rename changes the URL of the page you are on, and slugs are
  * per-locale now, so "the" slug depends on who is looking. So the resources
- * set $recordRouteKeyName = 'id'.
+ * key records by 'id' (getRecordRouteKeyName() below).
  *
  * That fixes RESOLUTION and not GENERATION. Filament honours the route key
  * name when turning a URL segment back into a record, but Resource::getUrl()
@@ -39,7 +39,16 @@ use Illuminate\Database\Eloquent\Model;
  */
 trait AddressesRecordsById
 {
-    protected static ?string $recordRouteKeyName = 'id';
+    /**
+     * A method, not a redeclared $recordRouteKeyName: PHP 8.4 refuses to
+     * compose a trait property whose default differs from the one Filament's
+     * HasRoutes already declares (fatal at autoload — the first production
+     * build died on it). 8.5 tolerates it, which is why it went unnoticed.
+     */
+    public static function getRecordRouteKeyName(): ?string
+    {
+        return 'id';
+    }
 
     public static function getUrl(
         ?string $name = null,
