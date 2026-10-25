@@ -111,6 +111,12 @@ mv -Tf "$APP_DIR/current.tmp" "$APP_DIR/current"
 
 "$PHP" artisan queue:restart --no-ansi || true
 
+# Photographs live in shared/storage, never in Git. Say so loudly if the
+# database names files that are not there, without failing the release.
+log "Media files"
+"$PHP" artisan media:verify --no-ansi \
+    || echo "::warning::Some media files are missing from shared/storage — run 'php artisan media:verify --list' on the server."
+
 log "Health check"
 if [ "$(readlink "$PUBLIC_HTML" 2>/dev/null || true)" != "$APP_DIR/current/public" ]; then
     echo "::warning::$PUBLIC_HTML is not linked to $APP_DIR/current/public yet; release is in place but not live, health check skipped."
