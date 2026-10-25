@@ -4,9 +4,9 @@
 # the built release archive has been copied to $ARCHIVE.
 #
 # Layout (everything outside public_html, which is a symlink to
-# app/current/public):
+# current/public):
 #
-#   ~/domains/anasfareed.com/app/
+#   ~/apps/anasfareed.com/   (Hostinger marks ~/domains/<site>/ DO_NOT_UPLOAD_HERE)
 #     releases/<sha>/        one directory per deploy
 #     shared/.env            written once by hand; never in Git, never replaced
 #     shared/storage/        uploads, originals, logs — survives every deploy
@@ -23,8 +23,9 @@ set -euo pipefail
 : "${RELEASE:?}" "${ARCHIVE:?}"
 RUN_MIGRATIONS="${RUN_MIGRATIONS:-false}"
 PHP="${PHP_BIN:-/opt/alt/php84/usr/bin/php}"
-APP_DIR="${APP_DIR:-$HOME/domains/anasfareed.com/app}"
+APP_DIR="${APP_DIR:-$HOME/apps/anasfareed.com}"
 SITE_URL="${SITE_URL:-https://anasfareed.com}"
+PUBLIC_HTML="${PUBLIC_HTML:-$HOME/domains/anasfareed.com/public_html}"
 KEEP_RELEASES=5
 
 release_dir="$APP_DIR/releases/$RELEASE"
@@ -54,13 +55,17 @@ ln -s ../storage/app/public "$release_dir/public/storage"
 cd "$release_dir"
 
 log "Checking migrations"
-if ! status_out="$("$PHP" artisan migrate:status --pending --no-ansi 2>&1)"; then
+if ! status_out="$("$PHP" artisan migrate:status --pending --no-ansi 2>&1)" \
+   && ! printf '%s' "$status_out" | grep -q 'Migration table not found'; then
     echo "$status_out" >&2
     echo "::error::Could not read migration status (database unreachable, or never migrated). The live site was NOT changed." >&2
     rm -rf "$release_dir"
     exit 1
 fi
 pending="$(printf '%s\n' "$status_out" | grep -c 'Pending' || true)"
+# A database that was never migrated counts as pending, so the first
+# initialisation also needs run_migrations=true.
+if printf '%s' "$status_out" | grep -q 'Migration table not found'; then pending=1; fi
 if [ "$pending" -gt 0 ]; then
     printf '%s\n' "$status_out"
     if [ "$RUN_MIGRATIONS" != "true" ]; then
@@ -104,6 +109,10 @@ mv -Tf "$APP_DIR/current.tmp" "$APP_DIR/current"
 "$PHP" artisan queue:restart --no-ansi || true
 
 log "Health check"
+if [ "$(readlink "$PUBLIC_HTML" 2>/dev/null || true)" != "$APP_DIR/current/public" ]; then
+    echo "::warning::$PUBLIC_HTML is not linked to $APP_DIR/current/public yet; release is in place but not live, health check skipped."
+    exit 0
+fi
 ok=""
 for _ in 1 2 3 4 5 6; do
     if [ "$(curl -fsS --max-time 10 "$SITE_URL/up" 2>/dev/null || true)" != "" ]; then ok=1; break; fi
