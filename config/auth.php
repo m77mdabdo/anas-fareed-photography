@@ -163,4 +163,31 @@ return [
         return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? true;
     })(),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Second-Factor Exemption For The Site Owner
+    |--------------------------------------------------------------------------
+    |
+    | The email address of ONE account that may reach the dashboard with its
+    | password alone, while enforcement stays on for everybody else. It
+    | applies only if that account's role is Owner; an Editor with this
+    | address is still asked for a second factor.
+    |
+    | Unset (the default) means no exemption. Removing the line turns the
+    | requirement back on for that account; its stored second factor, if it
+    | has one, is never touched by this setting. See
+    | App\Support\TwoFactorEnforcement::requiredFor().
+    |
+    */
+
+    'two_factor_exempt_owner' => (static function (): ?string {
+        $value = env('AUTH_TWO_FACTOR_EXEMPT_OWNER');
+
+        if (! is_string($value) || trim($value) === '') {
+            return null;
+        }
+
+        return mb_strtolower(trim($value));
+    })(),
+
 ];

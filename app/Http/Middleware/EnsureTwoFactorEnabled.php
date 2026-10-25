@@ -51,7 +51,7 @@ class EnsureTwoFactorEnabled
             abort(403);
         }
 
-        if (! TwoFactorEnforcement::required()) {
+        if (! TwoFactorEnforcement::requiredFor($user)) {
             return $next($request);
         }
 

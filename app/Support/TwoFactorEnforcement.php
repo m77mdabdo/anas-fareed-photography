@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Support;
 
+use App\Models\User;
 use RuntimeException;
 
 /**
@@ -29,6 +30,32 @@ final class TwoFactorEnforcement
     public static function required(): bool
     {
         return (bool) config('auth.require_two_factor', true);
+    }
+
+    /**
+     * Is a confirmed second factor required of THIS user?
+     *
+     * Yes whenever enforcement is on, except for the one Owner account named
+     * by AUTH_TWO_FACTOR_EXEMPT_OWNER. The exemption is narrow on purpose:
+     * an address match alone is not enough — the role must be Owner too, so
+     * changing an editor's email to the configured one grants nothing.
+     */
+    public static function requiredFor(User $user): bool
+    {
+        return self::required() && ! self::exempts($user);
+    }
+
+    /** Is this user the owner account named in the exemption setting? */
+    public static function exempts(User $user): bool
+    {
+        $exempt = config('auth.two_factor_exempt_owner');
+
+        if (! is_string($exempt) || trim($exempt) === '') {
+            return false;
+        }
+
+        return $user->isOwner()
+            && mb_strtolower(trim((string) $user->email)) === mb_strtolower(trim($exempt));
     }
 
     /**

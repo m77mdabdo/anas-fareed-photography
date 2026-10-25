@@ -121,12 +121,12 @@ class ClearTwoFactor extends Command
          * enforcement still on would leave them redirected to the setup page
          * on every request — which looks like the command failing.
          */
-        if (TwoFactorEnforcement::required()) {
+        if (TwoFactorEnforcement::requiredFor($user->refresh())) {
             $this->newLine();
             $this->warn('Enforcement is still ON (config auth.require_two_factor).');
             $this->line('  The panels will now send this account to the two-factor setup page on');
-            $this->line('  every request. Set AUTH_REQUIRE_TWO_FACTOR=false in .env as well, or');
-            $this->line('  re-enrol from the setup page.');
+            $this->line('  every request. For the owner, set AUTH_TWO_FACTOR_EXEMPT_OWNER to this');
+            $this->line('  address in .env; otherwise re-enrol from the setup page.');
         }
 
         return self::SUCCESS;
