@@ -13,6 +13,10 @@ on:
         description: Back up the database, then run pending migrations
         type: boolean
         default: false
+      rollback:
+        description: Skip the build and point the site back at the previous release
+        type: boolean
+        default: false
 
 concurrency:
   group: deploy-production
@@ -30,6 +34,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: shivammathur/setup-php@v2
+        if: ${{ !inputs.rollback }}
         with:
           php-version: '8.4'
           extensions: bcmath, gd, imagick, intl, mbstring, pdo_mysql, zip, exif
@@ -37,19 +42,23 @@ jobs:
           coverage: none
 
       - name: Install PHP dependencies (no dev)
+        if: ${{ !inputs.rollback }}
         run: composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction --no-progress
 
       - uses: actions/setup-node@v4
+        if: ${{ !inputs.rollback }}
         with:
           node-version: 20
           cache: npm
 
       - name: Build frontend assets
+        if: ${{ !inputs.rollback }}
         run: |
           npm ci --no-audit --no-fund
           npm run build
 
       - name: Package release
+        if: ${{ !inputs.rollback }}
         run: |
           tar -czf "$RUNNER_TEMP/release.tgz" \
             --exclude=./.git --exclude=./.github --exclude=./node_modules \
@@ -70,6 +79,7 @@ jobs:
           printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
 
       - name: Upload and activate release
+        if: ${{ !inputs.rollback }}
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
@@ -84,6 +94,16 @@ jobs:
           ssh "${ssh_opts[@]}" "$SSH_USER@$SSH_HOST" \
             "RELEASE='$RELEASE' ARCHIVE='$archive' RUN_MIGRATIONS='$RUN_MIGRATIONS' bash -s" \
             < bin/deploy-remote.sh
+
+      - name: Roll back to the previous release
+        if: ${{ inputs.rollback }}
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" -o StrictHostKeyChecking=yes -o BatchMode=yes \
+            "$SSH_USER@$SSH_HOST" 'bash -s' < bin/rollback-remote.sh
 
       - name: Remove SSH key
         if: always()
