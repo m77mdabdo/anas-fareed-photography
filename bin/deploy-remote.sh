@@ -7,11 +7,11 @@
 # current/public):
 #
 #   ~/apps/anasfareed.com/   (Hostinger marks ~/domains/<site>/ DO_NOT_UPLOAD_HERE)
-#     releases/<sha>/        one directory per deploy
+#     releases/<time>-<sha>/ one directory per deploy, never reused
 #     shared/.env            written once by hand; never in Git, never replaced
 #     shared/storage/        uploads, originals, logs — survives every deploy
 #     backups/               mysqldump taken before any migration
-#     current -> releases/<sha>
+#     current -> releases/<time>-<sha>
 #
 # MIGRATIONS NEVER RUN BY THEMSELVES. A push whose release has pending
 # migrations stops before the switch and leaves the live release untouched.
@@ -28,7 +28,8 @@ SITE_URL="${SITE_URL:-https://anasfareed.com}"
 PUBLIC_HTML="${PUBLIC_HTML:-$HOME/domains/anasfareed.com/public_html}"
 KEEP_RELEASES=5
 
-release_dir="$APP_DIR/releases/$RELEASE"
+# Timestamped so re-deploying the same commit never touches the live copy.
+release_dir="$APP_DIR/releases/$(date +%Y%m%d%H%M%S)-${RELEASE:0:12}"
 shared="$APP_DIR/shared"
 
 log() { printf '\n▶ %s\n' "$*"; }
@@ -41,7 +42,6 @@ mkdir -p "$shared/storage/app/public" "$shared/storage/app/private" "$shared/sto
          "$shared/storage/framework/views" "$shared/storage/logs" "$APP_DIR/backups"
 
 log "Unpacking release $RELEASE"
-rm -rf "$release_dir"
 mkdir -p "$release_dir"
 tar -xzf "$ARCHIVE" -C "$release_dir"
 rm -f "$ARCHIVE"
@@ -102,7 +102,7 @@ log "Caching config, routes, views"
 
 previous="$(readlink "$APP_DIR/current" 2>/dev/null || true)"
 
-log "Switching current -> $RELEASE"
+log "Switching current -> $(basename "$release_dir")"
 ln -sfn "$release_dir" "$APP_DIR/current.tmp"
 mv -Tf "$APP_DIR/current.tmp" "$APP_DIR/current"
 
@@ -114,8 +114,10 @@ if [ "$(readlink "$PUBLIC_HTML" 2>/dev/null || true)" != "$APP_DIR/current/publi
     exit 0
 fi
 ok=""
+# /up proves the framework boots; / proves the database answers too.
 for _ in 1 2 3 4 5 6; do
-    if [ "$(curl -fsS --max-time 10 "$SITE_URL/up" 2>/dev/null || true)" != "" ]; then ok=1; break; fi
+    if curl -fsS -o /dev/null --max-time 10 "$SITE_URL/up" \
+       && curl -fsS -o /dev/null --max-time 20 "$SITE_URL/"; then ok=1; break; fi
     sleep 5
 done
 if [ -z "$ok" ]; then
@@ -130,7 +132,7 @@ fi
 
 log "Pruning old releases (keeping $KEEP_RELEASES)"
 cd "$APP_DIR/releases"
-ls -1t | tail -n +$((KEEP_RELEASES + 1)) | while read -r old; do
+ls -1 | sort -r | tail -n +$((KEEP_RELEASES + 1)) | while read -r old; do
     [ "$APP_DIR/releases/$old" = "$(readlink "$APP_DIR/current")" ] || rm -rf "$APP_DIR/releases/$old"
 done
 
