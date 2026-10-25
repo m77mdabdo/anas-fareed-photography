@@ -28,4 +28,5 @@ Artisan::command('inspire', function () {
 Schedule::command('activity:prune')
     ->dailyAt('03:40')
     ->onOneServer()
+    ->withoutOverlapping()
     ->description('Delete activity-log entries past their retention window');

@@ -143,8 +143,9 @@ class TranslatableContentTest extends TestCase
 
                     $this->fail("$table accepted a slug with no '$missing' value");
                 } catch (QueryException $e) {
-                    $this->assertStringContainsString(
-                        'cannot be null',
+                    // MySQL: the NOT NULL generated column. MariaDB: its CHECK twin.
+                    $this->assertMatchesRegularExpression(
+                        '/cannot be null|CONSTRAINT `'.$table.'_slug_'.$missing.'_present` failed/',
                         $e->getMessage(),
                         "$table should refuse a slug missing '$missing' because the generated column is NOT NULL"
                     );
