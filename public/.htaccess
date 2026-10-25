@@ -46,6 +46,13 @@
     SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png|avif|webp|woff2?|zip|gz)$ no-gzip dont-vary
 </IfModule>
 
+# LiteSpeed on Hostinger has no AVIF mapping and serves the renditions as
+# text/plain, which nosniff then forbids a browser from treating as an image.
+<IfModule mod_mime.c>
+    AddType image/avif .avif
+    AddType image/webp .webp
+</IfModule>
+
 <IfModule mod_brotli.c>
     AddOutputFilterByType BROTLI_COMPRESS text/html text/css application/javascript application/json image/svg+xml
 </IfModule>

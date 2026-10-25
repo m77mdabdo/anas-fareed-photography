@@ -46,6 +46,9 @@ mkdir -p "$release_dir"
 tar -xzf "$ARCHIVE" -C "$release_dir"
 rm -f "$ARCHIVE"
 
+# The upload-directory guard ships with the release; refresh it in shared
+# storage every time, since that is the directory public/storage serves.
+install -m 644 "$release_dir/storage/app/public/.htaccess" "$shared/storage/app/public/.htaccess"
 rm -rf "$release_dir/storage"
 ln -s "$shared/storage" "$release_dir/storage"
 ln -s "$shared/.env" "$release_dir/.env"
