@@ -5,7 +5,9 @@ declare(strict_types=1);
 use App\Support\Locale;
 use App\Support\TranslatableSchema;
 use App\Support\TranslationBackfill;
+use Illuminate\Database\MariaDbConnection;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\MySqlConnection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -177,14 +179,24 @@ return new class extends Migration
              * uniqueness in Arabic at all. Declared NOT NULL, MySQL refuses
              * any write whose JSON has no key for that locale — the row cannot
              * be saved, rather than being saved into a hole.
+             *
+             * MARIADB REJECTS NULL / NOT NULL ON A GENERATED COLUMN (1064), and
+             * production runs MariaDB 11.8. There the same guarantee is a CHECK
+             * constraint on the generated value: a write whose JSON has no key
+             * for the locale fails with 4025 instead of being saved into a hole.
              */
-            $null = $isSlug ? 'NOT NULL' : 'NULL';
+            $maria = $this->isMariaDb();
+            $null = $maria ? '' : ($isSlug ? 'NOT NULL' : 'NULL');
             $path = '$."'.$locale.'"';
 
             DB::statement(
                 "ALTER TABLE `$table` ADD COLUMN `$name` VARCHAR(255) "
                 ."GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(`$source`, '$path'))) STORED $null"
             );
+
+            if ($maria && $isSlug) {
+                DB::statement("ALTER TABLE `$table` ADD CONSTRAINT `{$table}_{$name}_present` CHECK (`$name` IS NOT NULL)");
+            }
 
             if ($isSlug) {
                 DB::statement("ALTER TABLE `$table` ADD UNIQUE INDEX `{$table}_{$name}_unique` (`$name`)");
@@ -193,6 +205,14 @@ return new class extends Migration
             }
         }
 
+    }
+
+    private function isMariaDb(): bool
+    {
+        $connection = DB::connection();
+
+        return $connection instanceof MariaDbConnection
+            || ($connection instanceof MySqlConnection && $connection->isMaria());
     }
 
     /**
@@ -262,6 +282,11 @@ return new class extends Migration
             $index = $isSlug ? "{$table}_{$name}_unique" : "{$table}_{$name}_index";
 
             DB::statement("ALTER TABLE `$table` DROP INDEX `$index`");
+
+            if ($isSlug && $this->isMariaDb()) {
+                DB::statement("ALTER TABLE `$table` DROP CONSTRAINT IF EXISTS `{$table}_{$name}_present`");
+            }
+
             DB::statement("ALTER TABLE `$table` DROP COLUMN `$name`");
         }
 

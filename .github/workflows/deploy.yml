@@ -1,0 +1,110 @@
+name: Deploy to Hostinger
+
+# Every push to `production` builds the release here and ships it to
+# anasfareed.com over SSH. bin/deploy-remote.sh does the server side; read it
+# for the directory layout and the migration rule.
+
+on:
+  push:
+    branches: [production]
+  workflow_dispatch:
+    inputs:
+      run_migrations:
+        description: Back up the database, then run pending migrations
+        type: boolean
+        default: false
+      rollback:
+        description: Skip the build and point the site back at the previous release
+        type: boolean
+        default: false
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        if: ${{ !inputs.rollback }}
+        with:
+          php-version: '8.4'
+          extensions: bcmath, gd, imagick, intl, mbstring, pdo_mysql, zip, exif
+          tools: composer:v2
+          coverage: none
+
+      - name: Install PHP dependencies (no dev)
+        if: ${{ !inputs.rollback }}
+        run: composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction --no-progress
+
+      - uses: actions/setup-node@v4
+        if: ${{ !inputs.rollback }}
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Build frontend assets
+        if: ${{ !inputs.rollback }}
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+
+      - name: Package release
+        if: ${{ !inputs.rollback }}
+        run: |
+          tar -czf "$RUNNER_TEMP/release.tgz" \
+            --exclude=./.git --exclude=./.github --exclude=./node_modules \
+            --exclude=./tests --exclude=./docs --exclude=./storage \
+            --exclude=./.env --exclude='./.env.*' --exclude=./public/storage \
+            --exclude=./public/hot --exclude=./.phpunit.result.cache --exclude=./.kilo \
+            .
+          ls -lh "$RUNNER_TEMP/release.tgz"
+
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      - name: Upload and activate release
+        if: ${{ !inputs.rollback }}
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          RELEASE: ${{ github.sha }}
+          RUN_MIGRATIONS: ${{ inputs.run_migrations || 'false' }}
+        run: |
+          ssh_opts=(-i ~/.ssh/deploy_key -p "$SSH_PORT" -o StrictHostKeyChecking=yes -o BatchMode=yes)
+          archive="/home/$SSH_USER/release-$RELEASE.tgz"
+          scp -i ~/.ssh/deploy_key -P "$SSH_PORT" -o StrictHostKeyChecking=yes -o BatchMode=yes \
+            "$RUNNER_TEMP/release.tgz" "$SSH_USER@$SSH_HOST:$archive"
+          ssh "${ssh_opts[@]}" "$SSH_USER@$SSH_HOST" \
+            "RELEASE='$RELEASE' ARCHIVE='$archive' RUN_MIGRATIONS='$RUN_MIGRATIONS' bash -s" \
+            < bin/deploy-remote.sh
+
+      - name: Roll back to the previous release
+        if: ${{ inputs.rollback }}
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" -o StrictHostKeyChecking=yes -o BatchMode=yes \
+            "$SSH_USER@$SSH_HOST" 'bash -s' < bin/rollback-remote.sh
+
+      - name: Remove SSH key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
