@@ -60,6 +60,35 @@ class GuaranteesTest extends TestCase
         ]);
     }
 
+    /**
+     * MariaDB (production) stores JSON as LONGTEXT guarded by a json_valid()
+     * CHECK, and rejects NOT NULL on a generated column, so the migration
+     * enforces slug presence with a CHECK instead. Both are the same guarantee
+     * in the other engine's vocabulary.
+     */
+    private function isMariaJson(string $table, object $column): bool
+    {
+        if (! DB::connection()->isMaria() || strtolower($column->Type) !== 'longtext') {
+            return false;
+        }
+
+        return DB::table('information_schema.check_constraints')
+            ->where('constraint_schema', DB::getDatabaseName())
+            ->where('table_name', $table)
+            ->where('check_clause', 'like', "%json_valid(`{$column->Field}`)%")
+            ->exists();
+    }
+
+    private function hasPresenceCheck(string $table, string $column): bool
+    {
+        return DB::connection()->isMaria()
+            && DB::table('information_schema.check_constraints')
+                ->where('constraint_schema', DB::getDatabaseName())
+                ->where('table_name', $table)
+                ->where('constraint_name', "{$table}_{$column}_present")
+                ->exists();
+    }
+
     // ----------------------------------------------------------------- 1
 
     /**
@@ -84,7 +113,7 @@ class GuaranteesTest extends TestCase
             $json = [];
 
             foreach (DB::select("SHOW COLUMNS FROM `{$table}`") as $column) {
-                if (strtolower($column->Type) === 'json') {
+                if (strtolower($column->Type) === 'json' || $this->isMariaJson($table, $column)) {
                     $json[] = $column->Field;
                 }
             }
@@ -133,7 +162,7 @@ class GuaranteesTest extends TestCase
                     continue;
                 }
 
-                if ($column->Null !== 'NO') {
+                if ($column->Null !== 'NO' && ! $this->hasPresenceCheck($table, $name)) {
                     $problems[] = "{$table}.{$name} is nullable";
                 }
 
