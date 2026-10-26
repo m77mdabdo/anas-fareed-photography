@@ -523,12 +523,15 @@ class StudioPanelTest extends TestCase
         // Engineering pass, 24 Oct 2026: +373 bytes — the Arabic hero's portrait
         // voice placed before the plate, as in English; 900px breakpoints made
         // exclusive (max-width 899px).
-        $this->assertSame('assets/public-B5UqbslX.css', $publicCss, 'the public stylesheet changed');
+        // Mobile hero fix, 26 Oct 2026: +149 bytes — the phone plate takes its
+        // 4:5 height from a padding-top ::before instead of aspect-ratio, which
+        // a real iPhone ignored and collapsed the photograph to zero.
+        $this->assertSame('assets/public-Ba_uIj6M.css', $publicCss, 'the public stylesheet changed');
         $this->assertSame('assets/public-1o_v3AtE.js', $publicJs, 'the public entry changed');
 
         $cssBytes = (int) filesize(public_path('build/'.$publicCss));
 
-        $this->assertSame(100_908, $cssBytes, 'the public stylesheet is a different size');
+        $this->assertSame(101_057, $cssBytes, 'the public stylesheet is a different size');
 
         /*
          * 90,000 -> 91,000 in Task 42 item 4, for fifteen @font-face blocks:
@@ -550,9 +553,12 @@ class StudioPanelTest extends TestCase
          * 100,000 -> 101,000 for two @font-face rules (fonts.css: 'Archivo
          * Figures', 'Inter Tight Basic'), 636 bytes raw — fonts the Arabic
          * pages fetch instead of 80 kB of Latin files. 16.5 kB gzipped.
+         *
+         * 101,000 -> 101,200 for the phone hero plate's ::before height
+         * (149 bytes raw), so the photograph cannot collapse on iOS.
          */
         $this->assertLessThan(
-            101_000,
+            101_200,
             $cssBytes,
             'the public stylesheet has grown by more than a rule or two; something has leaked into it'
         );

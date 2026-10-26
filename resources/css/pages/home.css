@@ -494,12 +494,30 @@
         text-align: left;
     }
 
+    /*
+     * The plate's height comes from its own content, not from aspect-ratio.
+     *
+     * The picture inside is absolutely positioned, so the plate has no
+     * intrinsic height; with `aspect-ratio` on a stretched grid item, engines
+     * disagree about which wins, and on a real iPhone the plate collapsed to
+     * zero and the photograph vanished while desktop Chrome showed it. A
+     * padding-top percentage resolves against the width in every engine, so
+     * the 4:5 box is the same everywhere.
+     */
     .hero--landscape .hero__plate,
     .hero--portrait .hero__plate,
     .hero--square .hero__plate {
         grid-column: 1;
         grid-row: 3;
-        aspect-ratio: 4 / 5;
+        align-self: start;
+    }
+
+    .hero--landscape .hero__plate::before,
+    .hero--portrait .hero__plate::before,
+    .hero--square .hero__plate::before {
+        content: '';
+        display: block;
+        padding-top: 125%;
     }
 
     /*
