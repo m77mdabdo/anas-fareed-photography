@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /*
  * Plain-language labels for Studio → Site settings, one per key in
- * App\Support\SiteCopy (master directive, Phase 5): the owner reads "Studio
+ * App\Support\SiteCopy: the owner reads "Studio
  * name", not "site.name". The key itself stays visible as a small hint, for
  * support. SettingLabelsTest fails if a key has no label here.
  */

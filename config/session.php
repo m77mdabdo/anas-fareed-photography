@@ -170,8 +170,8 @@ return [
     */
 
     /*
-     * Secure by default in production (master directive, Part 8 security
-     * review): with SESSION_SECURE_COOKIE unset the cookie went out without
+     * Secure by default in production: with SESSION_SECURE_COOKIE unset the cookie
+     * went out without
      * the Secure flag even over HTTPS, and nothing in the deployment guide
      * said to set it. An explicit value still wins.
      */

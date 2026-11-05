@@ -1,5 +1,5 @@
 /*
- * The header in a browser (master directive, Phase 2): the globe language
+ * The header in a browser: the globe language
  * switcher, the mobile menu and the bar that steps aside on scroll.
  *
  *   - the toggle is announced expanded / collapsed (accessibility tree)

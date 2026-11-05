@@ -11,7 +11,7 @@ use Illuminate\Console\Command;
 
 /**
  * Brings a running site from the editorial copy to the commercial copy
- * (master directive, 22 Oct 2026) without touching anything the owner wrote.
+ * without touching anything the owner wrote.
  *
  * SettingsSeeder creates settings and never updates them, which is what keeps
  * an owner's wording through every deploy — and also why changing a default

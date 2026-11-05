@@ -13,7 +13,7 @@ use Filament\Pages\Page;
 use Livewire\Attributes\Url;
 
 /**
- * The Help Center (Help Center directive, Parts 3–5, 11).
+ * The Help Center.
  *
  * One page, four views, each with its own address so a link to it can be
  * shared or bookmarked:

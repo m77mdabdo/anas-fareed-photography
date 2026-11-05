@@ -12,8 +12,7 @@ use Filament\Pages\Page;
 use Laravel\Fortify\Actions\GenerateNewRecoveryCodes;
 
 /**
- * Account security — the signed-in person's two-factor recovery codes
- * (master directive, Parts 7-8).
+ * Account security — the signed-in person's two-factor recovery codes.
  *
  * The sign-in challenge has always accepted a recovery code, and nothing in
  * the dashboard ever showed one: an owner who lost their phone was locked

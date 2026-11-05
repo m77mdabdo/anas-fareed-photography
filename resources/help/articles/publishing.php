@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /*
  * Publishing, hiding, deleting, restoring. These four are kept as separate
- * articles on purpose (Help Center directive, Part 4): they look alike in a
+ * articles on purpose: they look alike in a
  * search and do very different things. HelpSearch offers them as a choice
  * when a query only says "remove".
  */

@@ -1,5 +1,5 @@
 {{--
-    One Help article (Help Center directive, Parts 3, 11, 12).
+    One Help article.
 
     The steps are an ordinary numbered list — complete, printable, readable
     with no script at all. "Guide me step by step" (Alpine) shows them one at

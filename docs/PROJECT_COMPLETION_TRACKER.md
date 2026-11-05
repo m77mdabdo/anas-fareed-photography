@@ -1,6 +1,6 @@
 # Project completion tracker
 
-Started 22 October 2026 from the master directive "Complete the photography
+Started 22 October 2026 from the brief "Complete the photography
 website today". Statuses: TODO · IN PROGRESS · DONE · BLOCKED · VERIFIED.
 VERIFIED means the check named in the row was run and passed; DONE means
 built but not yet checked.

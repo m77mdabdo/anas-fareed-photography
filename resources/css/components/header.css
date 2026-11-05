@@ -1,6 +1,6 @@
 /*
- * The header's controls: the globe language switcher and the mobile menu
- * (master directive, Phase 2; Task 42 Part 2). Markup in layouts/public and
+ * The header's controls: the globe language switcher and the mobile menu.
+ * Markup in layouts/public and
  * components/globe-switch; behaviour in resources/js/public/header.js.
  *
  * Both controls are <details>, so both open and close with scripting off.

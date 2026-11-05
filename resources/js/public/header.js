@@ -1,6 +1,6 @@
 /*
- * The header's two behaviours HTML cannot express (master directive, Phase 2;
- * Task 42 Part 2). Everything here is an enhancement: without it the globe and
+ * The header's two behaviours HTML cannot express. Everything here is an
+ * enhancement: without it the globe and
  * the menu still open and close (they are <details>), and the header simply
  * stays where it is.
  *

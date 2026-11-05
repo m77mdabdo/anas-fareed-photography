@@ -11,8 +11,8 @@ use Illuminate\Support\Str;
 /**
  * The Help Center's articles, read from resources/help.
  *
- * Structured data rather than one long document (Help Center directive,
- * Part 2): each article is a task with an id, a category, steps, field
+ * Structured data rather than one long document: each article is a task with
+ * an id, a category, steps, field
  * explanations, checks, troubleshooting and search words, in English and in
  * Arabic, side by side in one array so the two cannot drift apart unnoticed.
  *

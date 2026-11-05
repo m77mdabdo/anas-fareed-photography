@@ -2,7 +2,7 @@
 
 **Task:** 32, Part 2a
 **Measured at:** `ec2e80d`
-**Method:** `scratchpad/inventory.php` — strips Blade comments, directives and
+**Method:** a one-off inventory script — strips Blade comments, directives and
 echo expressions first, so what is counted is literal text between tags plus
 the four attributes a visitor reads (`placeholder`, `aria-label`, `title`,
 `alt`). Old-admin views are excluded because Part 6 deletes them; the Fortify

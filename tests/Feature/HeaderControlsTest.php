@@ -11,8 +11,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
- * The header's globe language switcher and mobile menu (master directive,
- * Phase 2). What can be asserted from the server: both are <details>, so
+ * The header's globe language switcher and mobile menu. What can be asserted
+ * from the server: both are <details>, so
  * they open with scripting off; the globe wraps the one locale form; the
  * menu carries the navigation. Escape, outside-tap and the step-aside on
  * scroll are browser behaviour, checked by bin/browser-check.mjs.

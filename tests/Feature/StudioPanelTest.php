@@ -540,7 +540,7 @@ class StudioPanelTest extends TestCase
          * gzipped. Nothing else moved.
          */
         /*
-         * 91,000 -> 96,000 in Phase 2 of the master directive: the header's
+         * 91,000 -> 96,000 in the header work: the header's
          * globe language switcher and mobile menu (components/header.css),
          * ~5 kB raw, 0.7 kB gzipped.
          */

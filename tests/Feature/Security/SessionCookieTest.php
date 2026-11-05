@@ -8,7 +8,7 @@ use Tests\TestCase;
 
 /**
  * The session cookie carries the Secure flag in production unless somebody
- * explicitly turns it off (master directive, Part 8). Read from the config
+ * explicitly turns it off. Read from the config
  * file with the environment varied, because the value is decided when the
  * file is evaluated.
  */

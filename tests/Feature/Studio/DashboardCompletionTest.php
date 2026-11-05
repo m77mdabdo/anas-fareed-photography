@@ -22,7 +22,7 @@ use Livewire\Livewire;
 use Tests\TestCase;
 
 /**
- * The dashboard gaps the master directive's audit found (Part 7), each
+ * The dashboard gaps an audit found, each
  * closed and pinned here:
  *
  *   - Site settings showed raw keys ("site.name") as labels

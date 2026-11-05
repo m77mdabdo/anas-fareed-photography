@@ -8,7 +8,7 @@ use App\Filament\Pages\Help;
 use Filament\Actions\Action;
 
 /**
- * Contextual help beside a complex control (master directive, Part 7).
+ * Contextual help beside a complex control.
  *
  * A question-mark BUTTON, not a hover tooltip: a tooltip needs a mouse, and
  * the dashboard is used mostly from a phone. Pressing it opens a short

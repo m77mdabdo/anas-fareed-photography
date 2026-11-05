@@ -8,7 +8,7 @@ use App\Providers\AppServiceProvider;
 use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
-/** APP_DEBUG=true is forced off in production, and the log says so (master directive, Part 8). */
+/** APP_DEBUG=true is forced off in production, and the log says so. */
 class ProductionDebugTest extends TestCase
 {
     public function test_debug_is_forced_off_in_production(): void

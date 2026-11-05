@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace App\Support\Help;
 
 /**
- * Task search for the Help Center, in English, Arabic and Egyptian Arabic
- * (Help Center directive, Part 4).
+ * Task search for the Help Center, in English, Arabic and Egyptian Arabic.
  *
  * A query is normalised (case, Arabic letter forms, diacritics, digits),
  * stripped of the words that only carry the shape of a request ("how do I",

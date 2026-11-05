@@ -1,6 +1,5 @@
 /*
- * DASHBOARD → WEBSITE, THROUGH THE REAL INTERFACE (master directive, final
- * acceptance). For each major content type:
+ * DASHBOARD → WEBSITE, THROUGH THE REAL INTERFACE. For each major content type:
  *
  *   1  open the dashboard form, read the current value
  *   2  change it by typing / choosing in the actual control

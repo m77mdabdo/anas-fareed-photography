@@ -203,14 +203,14 @@ class AppServiceProvider extends ServiceProvider
         Settings::overlayConfig();
 
         /*
-         * TWELVE CHARACTERS, EVERYWHERE (master directive, Part 8). make:admin-user
+         * TWELVE CHARACTERS, EVERYWHERE. make:admin-user
          * already asked for 12; Fortify's reset and the panel's profile page read
          * Password::default(), which was Laravel's 8. One rule now.
          */
         Password::defaults(fn () => Password::min(12));
 
         /*
-         * DEBUG NEVER REACHES A VISITOR IN PRODUCTION (master directive, Part 8).
+         * DEBUG NEVER REACHES A VISITOR IN PRODUCTION.
          * APP_DEBUG=true on a live server renders stack traces with environment
          * values to anybody who triggers an error. Forced off here, and said so
          * in the log, rather than trusting that the .env was edited.

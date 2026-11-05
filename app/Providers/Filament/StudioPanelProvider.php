@@ -266,7 +266,7 @@ class StudioPanelProvider extends PanelProvider
             ])
 
             /*
-             * The owner's own account (master directive, Part 7): name, email
+             * The owner's own account: name, email
              * and password. Changing the password asks for the current one.
              * Account security (recovery codes) is beside it in the menu.
              */

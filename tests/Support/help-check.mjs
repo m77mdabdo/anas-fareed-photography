@@ -1,6 +1,6 @@
 /*
- * The Help Center and contextual help, in a browser (master directive,
- * Part 7), at a phone width and a desktop width, in both panel languages:
+ * The Help Center and contextual help, in a browser, at a phone width and a
+ * desktop width, in both panel languages:
  *
  *   - each question-mark button opens the explanation for ITS control, in the
  *     panel's language, with a link to the Help article for that task

@@ -3,7 +3,7 @@
  * page. Markup: components/home/cinematic-sequence. Settings: Studio →
  * Cinematic sections.
  *
- * THE EXCLUSIVE SPOTLIGHT (master directive, Part 6). A gallery becomes a
+ * THE EXCLUSIVE SPOTLIGHT. A gallery becomes a
  * pinned stage: the section is made tall, its stage sticks, and scrolling
  * moves the light from the first photograph to the last. At any settled
  * position exactly ONE photograph is lit; the others sit under a veil at the

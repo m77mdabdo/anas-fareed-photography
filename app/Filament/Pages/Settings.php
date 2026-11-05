@@ -79,8 +79,8 @@ class Settings extends Page
 
     /** site.name ⇄ site__name. The dots are what Livewire cannot carry. */
     /**
-     * The plain label an owner reads — "Studio name", not "site.name"
-     * (master directive, Phase 5). From lang/{en,ar}/setting_labels.php; the
+     * The plain label an owner reads — "Studio name", not "site.name".
+     * From lang/{en,ar}/setting_labels.php; the
      * key stays visible as a hint, for anybody asking for help. A key with
      * no label falls back to itself, and SettingLabelsTest fails on it.
      */

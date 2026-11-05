@@ -12,7 +12,7 @@ use Tests\TestCase;
 /**
  * The Help articles are data, and data can rot: a button is renamed, an
  * article is removed, a translation is left half done. These hold the
- * knowledge base to its own rules (Help Center directive, Parts 2, 16, 18).
+ * knowledge base to its own rules.
  */
 class HelpKnowledgeBaseTest extends TestCase
 {

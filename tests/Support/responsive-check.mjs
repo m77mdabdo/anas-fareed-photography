@@ -1,5 +1,5 @@
 /*
- * Every public route, both languages, ten widths (master directive, Part 10),
+ * Every public route, both languages, ten widths,
  * and the dashboard's main screens at phone widths (Part 5).
  *
  * For each page and width:

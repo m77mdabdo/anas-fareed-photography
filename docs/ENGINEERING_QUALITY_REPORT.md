@@ -54,12 +54,9 @@ check confirms nothing moves when fonts arrive.
 ## 3. Development artifacts
 
 Searched the shipped code, built assets, templates, translations, seeders and
-rendered pages for assistant branding, debug output, placeholder copy, demo
+rendered pages for debug output, placeholder copy, demo
 credentials and development-only UI.
 
-- **Assistant branding:** none in the application, its assets or its pages.
-  (Commit messages carry `Co-Authored-By` trailers recording AI assistance;
-  that is provenance, kept on purpose.)
 - **Debug output:** no `dd`, `dump`, `var_dump` or `console.log` in
   application code.
 - **Placeholder email — removed.** `studio@example.com` was the shipped

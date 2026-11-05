@@ -11,7 +11,7 @@ use App\Support\Help\KnowledgeBase;
 use Illuminate\Console\Command;
 
 /**
- * The Help Center's coverage report (Help Center directive, Part 19),
+ * The Help Center's coverage report,
  * measured rather than claimed.
  *
  * Reads the live dashboard inventory written by

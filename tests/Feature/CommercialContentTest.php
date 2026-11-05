@@ -19,7 +19,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
- * The commercial rewrite (master directive, 22 Oct 2026): what the site says
+ * The commercial rewrite: what the site says
  * about the business, how a running site is moved onto it without losing an
  * owner's edits, and the line between demo content and real content.
  */

@@ -7,7 +7,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * The exclusive spotlight (master directive, Part 6): one photograph lit at
+ * The exclusive spotlight: one photograph lit at
  * a time, a moving strip on phones, and direction that follows the language
  * unless the owner overrides it. Additive only — existing sections keep
  * their values; light_direction gains 'auto' as the default for new rows.

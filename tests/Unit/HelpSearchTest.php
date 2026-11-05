@@ -9,7 +9,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 /**
- * Help Center search (Help Center directive, Parts 4 and 17): the query a
+ * Help Center search: the query a
  * person types finds the task they mean, in English, Arabic or Egyptian
  * Arabic, misspelt or half typed.
  */

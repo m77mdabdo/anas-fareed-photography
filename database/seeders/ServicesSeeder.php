@@ -12,7 +12,7 @@ use Illuminate\Database\Seeder;
  * The studio's six services, in English and Arabic — real content, not demo.
  *
  * Unlike DemoServicesSeeder this runs in every environment: these are what
- * the business actually offers (master directive, 22 Oct 2026). So it obeys
+ * the business actually offers. So it obeys
  * Concerns\ProtectsEditedContent in its strictest form — a service is
  * CREATED if its slug does not exist, and otherwise left exactly as it is,
  * soft-deleted ones included. The owner edits them in Studio → Services; a

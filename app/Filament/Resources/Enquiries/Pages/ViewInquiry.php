@@ -46,7 +46,7 @@ class ViewInquiry extends ViewRecord
     {
         return [
             /*
-             * Where the enquiry stands (master directive, Part 7). The statuses
+             * Where the enquiry stands. The statuses
              * existed and the list filtered by them, but nothing could set one
              * beyond "New" turning "Read" on opening — so "Booked" was a
              * filter with nothing in it.
